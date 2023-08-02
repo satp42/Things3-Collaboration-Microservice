@@ -5,16 +5,20 @@ extern crate dotenv;
 use dotenv::dotenv;
 use std::env;
 
-// Config struct will go here
+mod config;
+mod graphql_client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     env_logger::init();
     
-    // Getting config from env variables will go here
-    
-    // Fetching tasks and sending SMS/Email functionalities will be placed here
+    let config: config::Config = envy::from_env().expect("Failed to fetch config from environment variables");
+
+    let baseURL = "https://localhost:3000".toString();
+    let client = graphql_client::GraphQLClient::new(baseURL);
+
+    let tasks = client.get_todays_task().await?;
 
     Ok(())
 }
